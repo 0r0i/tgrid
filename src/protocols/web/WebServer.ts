@@ -1,7 +1,7 @@
 //================================================================ 
 /** @module tgrid.protocols.web */
 //================================================================
-import * as ws from "websocket";
+import * as ws from "ws";
 import * as http from "http";
 import * as https from "https";
 
@@ -45,7 +45,7 @@ export class WebServer<Provider extends object = {}>
     /**
      * @hidden
      */
-    private protocol_?: ws.server;
+    private protocol_: ws.Server;
 
     /* ----------------------------------------------------------------
         CONSTRUCTORS
@@ -69,7 +69,6 @@ export class WebServer<Provider extends object = {}>
 
     public constructor(key?: string, cert?: string)
     {
-        // PREPARE SREVER INSTANCE
         if (key)
         {
             this.options_ = ({ key: key, cert: cert });
@@ -78,7 +77,7 @@ export class WebServer<Provider extends object = {}>
         else
             this.server_ = http.createServer();
 
-        // STATUS AND SOCKET ARE YET
+        this.protocol_ = new ws.Server({ server: this.server_ });
         this.state_ = WebServer.State.NONE;
     }
 
@@ -125,10 +124,10 @@ export class WebServer<Provider extends object = {}>
             // PROTOCOL - ADAPTOR & ACCEPTOR
             try
             {
-                this.protocol_ = new ws.server({ httpServer: this.server_, maxReceivedMessageSize: 100 * MB });
-                this.protocol_.on("request", request =>
+                this.protocol_ = new ws.Server({ server: this.server_ });
+                this.protocol_.on("connection", (socket, request) =>
                 {
-                    let acceptor: WebAcceptor<Provider> = WebAcceptor.create<Provider>(request);
+                    let acceptor: WebAcceptor<Provider> = WebAcceptor.create(socket, request);
                     handler(acceptor);
                 });
             }
@@ -212,6 +211,3 @@ export namespace WebServer
         CLOSED = 3
     }
 }
-
-const KB = 1024 * 1024;
-const MB = KB * 1024;

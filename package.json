@@ -22,7 +22,8 @@
   "dependencies": {
     "serialize-error": "^4.1.0",
     "tstl": "^2.3.0-dev.20190811",
-    "websocket": "^1.0.28"
+    "websocket": "^1.0.29",
+    "ws": "^7.1.2"
   },
   "devDependencies": {
     "@types/browserify": "^12.0.36",
@@ -30,6 +31,7 @@
     "@types/puppeteer": "^1.11.1",
     "@types/sharedworker": "0.0.28",
     "@types/websocket": "0.0.40",
+    "@types/ws": "^6.0.2",
     "browserify": "^16.2.3",
     "local-web-server": "^2.6.0",
     "mv": "^2.1.1",
